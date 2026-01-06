@@ -1,0 +1,6 @@
+@LINKCS.PAYMENT.TECHTEST.PRESENTATION_HostAddress = http://localhost:5238
+
+GET {{LINKCS.PAYMENT.TECHTEST.PRESENTATION_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
