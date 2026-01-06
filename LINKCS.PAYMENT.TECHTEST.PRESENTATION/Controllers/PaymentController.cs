@@ -1,4 +1,5 @@
 ﻿using LINKCS.PAYMENT.TECHTEST.APPLICATION.Dtos;
+using LINKCS.PAYMENT.TECHTEST.APPLICATION.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
 using System.Xml.Linq;
@@ -15,10 +16,12 @@ namespace LINKCS.PAYMENT.TECHTEST.PRESENTATION.Controllers
         };
 
         private readonly ILogger<PaymentController> _logger;
+        private readonly IPaymentService _paymentService;
 
-        public PaymentController(ILogger<PaymentController> logger)
+        public PaymentController(ILogger<PaymentController> logger, IPaymentService paymentService)
         {
             _logger = logger;
+            _paymentService = paymentService;
         }
 
         [HttpPost]
@@ -27,25 +30,19 @@ namespace LINKCS.PAYMENT.TECHTEST.PRESENTATION.Controllers
             // Validar objeto
             // Preparar datos para guardarlos en base de datos
             // Validar errores
-            return await Task.FromResult(Ok(Payment));
+            var response = await _paymentService.SavePayment(Payment);
+            return await Task.FromResult(Ok(response));
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetById([FromQuery] string customerId)
+        public async Task<ActionResult<List<ResponsePaymentDto>>> GetById([FromQuery][Required] string customerId)
         {
             // Respuesta: ResponsePaymentDto
             // Validar objeto
             // Buscar por id en base de datos
-            // Validar errores
-            var response = Enumerable.Range(1, 5).Select(index => new WeatherForecast
-            {
-                Date = DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-                TemperatureC = Random.Shared.Next(-20, 55),
-                Summary = Summaries[Random.Shared.Next(Summaries.Length)]
-            })
-            .ToArray();
-
-            return await Task.FromResult(Ok(response));
+            // Validar errores            
+            var response = await _paymentService.GetByCustomerId(customerId);
+            return StatusCode(200, response);
         }
     }
 }

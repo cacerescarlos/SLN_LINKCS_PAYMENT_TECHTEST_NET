@@ -7,12 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\LINKCS.PAYMENT.TECHTEST.DOMAIN\LINKCS.PAYMENT.TECHTEST.DOMAIN.csproj" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="10.0.1" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.1" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Interfaces\" />
-    <Folder Include="Services\" />
+    <ProjectReference Include="..\LINKCS.PAYMENT.TECHTEST.DOMAIN\LINKCS.PAYMENT.TECHTEST.DOMAIN.csproj" />
   </ItemGroup>
 
 </Project>

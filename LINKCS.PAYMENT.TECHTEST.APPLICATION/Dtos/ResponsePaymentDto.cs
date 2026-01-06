@@ -9,12 +9,6 @@ namespace LINKCS.PAYMENT.TECHTEST.APPLICATION.Dtos
 {
     public class ResponsePaymentDto
     {
-        /// <summary>
-        /// EXT-FR-FE-158-0
-        /// G6.12 This data is mandatory from 01/09/2027 when the data must be mentioned on the invoice in accordance with the regulations (CGI, Ccom,...).Business rule but cannot be controlled from an application point of view.
-        /// </summary>
-        [JsonPropertyName("customerId")]
-        public string? CustomerId { get; set; }
 
         /// <summary>
         /// EXT-FR-FE-158 Delivery date at value line
@@ -22,24 +16,20 @@ namespace LINKCS.PAYMENT.TECHTEST.APPLICATION.Dtos
         /// G1.36 In a date, the year must not be < 2000 and > 2099.
         /// G6.12 This data is mandatory from 01/09/2027 when the data must be mentioned on the invoice in accordance with the regulations (CGI, Ccom,...).Business rule but cannot be controlled from an application point of view.
         /// </summary>
-        [JsonPropertyName("ServiceProvider")]
-        public string? ServiceProvider { get; set; }
-
         [JsonPropertyName("paymentId")]
         public string? PaymentId { get; set; }
 
+        [JsonPropertyName("serviceProvider")]
+        public string? ServiceProvider { get; set; }
+
+        [JsonPropertyName("amount")]
+        public decimal? Amount { get; set; }
+
         [JsonPropertyName("status")]
-        public Decimal? Status { get; set; }
+        public string? Status { get; set; }
 
         [JsonPropertyName("createdAt")]
         public DateTime CreatedAt { get; set; }
 
-        /// <summary>
-        /// EXT-FR-FE-158-1
-        /// In CII, it is necessary to integrate the code "102" in order to reference a date in the format YYYYMMDD in the tags EXT-FR-FE-158-0 and EXT-FR-FE-158-1.
-        /// G6.12 This data is mandatory from 01/09/2027 when the data must be mentioned on the invoice in accordance with the regulations (CGI, Ccom,...).Business rule but cannot be controlled from an application point of view.
-        /// </summary>
-        [JsonPropertyName("Amount")]
-        public Decimal? Amount { get; set; }
     }
 }
