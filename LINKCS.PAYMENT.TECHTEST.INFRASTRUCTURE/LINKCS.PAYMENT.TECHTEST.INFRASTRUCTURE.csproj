@@ -11,4 +11,14 @@
     <ProjectReference Include="..\LINKCS.PAYMENT.TECHTEST.DOMAIN\LINKCS.PAYMENT.TECHTEST.DOMAIN.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Scripts\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Dapper" Version="2.1.66" />
+    <PackageReference Include="Microsoft.Data.SqlClient" Version="6.1.3" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="10.0.1" />
+  </ItemGroup>
+
 </Project>

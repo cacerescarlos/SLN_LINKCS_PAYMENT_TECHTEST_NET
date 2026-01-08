@@ -1,4 +1,5 @@
 using LINKCS.PAYMENT.TECHTEST.APPLICATION.DI;
+using LINKCS.PAYMENT.TECHTEST.INFRASTRUCTURE.DI;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,7 +11,9 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 // DI - Application
-builder.Services.AddApplication(builder.Configuration);
+builder.Services.AddApplication();
+// DI - Infrastructure
+builder.Services.AddInfrastructure();
 
 var app = builder.Build();
 

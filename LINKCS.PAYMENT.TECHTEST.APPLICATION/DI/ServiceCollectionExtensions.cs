@@ -15,9 +15,7 @@ namespace LINKCS.PAYMENT.TECHTEST.APPLICATION.DI
         /// <summary>
         /// Registra los servicios
         /// </summary>
-        public static IServiceCollection AddApplication(
-            this IServiceCollection services,
-            IConfiguration configuration)
+        public static IServiceCollection AddApplication(this IServiceCollection services)
         {
             services.AddScoped<IPaymentService, PaymentService>();
             return services;

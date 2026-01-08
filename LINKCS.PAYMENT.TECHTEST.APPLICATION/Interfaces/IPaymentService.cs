@@ -10,6 +10,6 @@ namespace LINKCS.PAYMENT.TECHTEST.APPLICATION.Interfaces
     public interface IPaymentService
     {
         Task<string> SavePayment(RequestPaymentDto paymentDto);
-        Task<List<ResponsePaymentDto>> GetByCustomerId(string customerId);
+        Task<IEnumerable<ResponsePaymentDto>> GetByCustomerId(string customerId);
     }
 }

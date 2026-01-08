@@ -1,5 +1,8 @@
 ﻿using LINKCS.PAYMENT.TECHTEST.APPLICATION.Dtos;
+using LINKCS.PAYMENT.TECHTEST.APPLICATION.Infraestructura.Interfaces;
 using LINKCS.PAYMENT.TECHTEST.APPLICATION.Interfaces;
+using LINKCS.PAYMENT.TECHTEST.DOMAIN.Entities;
+using LINKCS.PAYMENT.TECHTEST.DOMAIN.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,77 +13,82 @@ namespace LINKCS.PAYMENT.TECHTEST.APPLICATION.Services
 {
     public class PaymentService : IPaymentService
     {
-        List<ResponsePaymentDto> paymentsCustomerId = new List<ResponsePaymentDto>()
-        {
-          new ResponsePaymentDto
-                {
-                    PaymentId = "PAY-001",
-                    ServiceProvider = "Visa",
-                    Amount = 150.50m,
-                    //Status = 1, // Supongamos 1 = Completado
-                    CreatedAt = DateTime.Now.AddDays(-2)
-                },
-                new ResponsePaymentDto
-                {
-                    PaymentId = "PAY-002",
-                    ServiceProvider = "Mastercard",
-                    Amount = 45.00m,
-                    //Status = 1,
-                    CreatedAt = DateTime.Now.AddDays(-1)
-                },
-                new ResponsePaymentDto
-                {
-                    PaymentId = "PAY-003",
-                    ServiceProvider = "PayPal",
-                    Amount = 1200.00m,
-                    //Status = 0, // Supongamos 0 = Pendiente/Error
-                    CreatedAt = DateTime.Now
-                },
-                new ResponsePaymentDto
-                {
-                    PaymentId = "PAY-004",
-                    ServiceProvider = "Stripe",
-                    Amount = 89.99m,
-                    //Status = 1,
-                    CreatedAt = DateTime.Now.AddHours(-5)
-                },
-                new ResponsePaymentDto
-                {
-                    PaymentId = "PAY-005",
-                    ServiceProvider = "Visa",
-                    Amount = 500.00m,
-                    //Status = 2, // Supongamos 2 = Reembolsado
-                    CreatedAt = DateTime.Now.AddMonths(-1)
-                }
+        private readonly IPaymentRepository _paymentRepository;
 
-        };
-
-        public async Task<List<ResponsePaymentDto>> GetByCustomerId(string customerId)
+        public PaymentService(IPaymentRepository paymentRepository)
         {
-            // TODO: Logica de negocio
-            // Consultar en base de datos - Repositorio , filtrando el id del cliente
-            // Devuelve una lista de pagos por customerId <-cliente            
-            return await Task.FromResult(paymentsCustomerId);
+            _paymentRepository = paymentRepository;
+        }
+
+
+        public async Task<IEnumerable<ResponsePaymentDto>> GetByCustomerId(string customerId)
+        {
+            try
+            {
+                var payments = await _paymentRepository.GetByCustomerIdAsync(customerId);
+                
+                #region Mapeo a DTO
+                var response = payments.Select(payment => new ResponsePaymentDto
+                {
+                    PaymentId = payment.PaymentId,
+                    ServiceProvider = payment.ServiceProvider,
+                    Amount = payment.Amount,
+                    Status = payment.Status,
+                    CreatedAt = payment.CreatedAt
+                }).AsEnumerable();
+                #endregion
+
+                return response;
+            }
+            catch (Exception e)
+            {
+
+                throw;
+            }
         }
 
         public async Task<string> SavePayment(RequestPaymentDto paymentDto)
         {
-            // TODO: Logica de negocio
-            // Estado en pendiente
-            // Rechazar montos > 15000 BS
-            // Rechazar montos en dólares
-            // Guardar en base de datos Repositorio
-            paymentsCustomerId.Add(
-                  new ResponsePaymentDto
-                  {
-                      PaymentId = "PAY-NUEVO",
-                      ServiceProvider = "Visax",
-                      Amount = 500,
-                      //Status = 2, // Supongamos 2 = Reembolsado
-                      CreatedAt = DateTime.Now.AddMonths(-1)
-                  }
-                );
-            return await Task.FromResult("Recibido con éxito");
+            try
+            {
+                #region Logica de negocio
+                // 1. Estado inicial pendiente
+                var status = PaymentStatus.Pendiente;
+
+                // 2. Rechazar montos negativos
+                if (paymentDto.Amount < 0)
+                {
+                    status = PaymentStatus.Rechazado;
+                    return "Pago rechazado: monto debe ser mayor que cero.";
+                }
+
+                // 3. Rechazar montos > 1500 BS
+                if (paymentDto.Amount > 1500)
+                {
+                    status = PaymentStatus.Rechazado;
+                    return "Pago rechazado: monto excede el límite de 1500 BS.";
+                }
+                #endregion
+
+                #region Guardar en base de datos
+                var payment = new Payment
+                {
+                    PaymentId = Guid.NewGuid().ToString(),
+                    CustomerId = paymentDto.CustomerId,
+                    ServiceProvider = paymentDto.ServiceProvider,
+                    Amount = paymentDto.Amount,
+                    Status = PaymentStatusExtensions.ToStatusString(status),
+                    CreatedAt = DateTime.UtcNow
+                };
+                var savedPayment = await _paymentRepository.AddAsync(payment);
+                #endregion
+
+                return $"Pago guardado con éxito. ID de Pago: {savedPayment.PaymentId}";
+            }
+            catch (Exception e)
+            {
+                return $"Error desconocido: {e.Message}";
+            }
         }
     }
 }
